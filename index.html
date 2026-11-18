@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prácticas Profesionales por Facultad – Universidad EAN (Prototipo)</title>
+<style>
+:root{--g:#3fae49;--gd:#2d8a37;--k:#000;--t:#222;--m:#666;--l:#e6e6e6;--bg:#fff;--y:#f5e642}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:var(--t);background:var(--bg);line-height:1.5}
+a{color:var(--gd)}
+:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+header{background:var(--k);color:#fff;padding:14px 5vw 0}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:14px}
+.logo b{font-size:34px;letter-spacing:1px;font-weight:600}
+.logo small{display:block;font-size:12px;margin-top:-6px}
+.logo span{border-left:1px solid #444;padding-left:14px;font-size:15px}
+.roles{display:flex;gap:6px;font-size:14px}
+.roles button{background:none;border:0;color:#9ad7a0;font:inherit;cursor:pointer;padding:6px 10px}
+.roles button[aria-pressed=true]{color:#fff;font-weight:700;border-bottom:2px solid var(--g)}
+nav{background:var(--g);margin:14px -5vw 0;padding:0 5vw;display:flex;flex-wrap:wrap}
+nav button{background:none;border:0;color:#fff;font:inherit;font-size:16px;padding:14px 20px;cursor:pointer;border-right:1px solid rgba(255,255,255,.25)}
+nav button[aria-pressed=true]{background:var(--gd);font-weight:700}
+.crumb{padding:10px 5vw;font-size:14px;color:var(--gd)}
+.wrap{display:grid;grid-template-columns:230px 1fr;gap:28px;padding:10px 5vw 50px;max-width:1300px;margin:auto}
+.wrap.one{grid-template-columns:1fr}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}}
+aside button{display:block;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--l);border-right:6px solid var(--g);padding:16px 12px;font:inherit;font-size:16px;cursor:pointer}
+aside button[aria-pressed=true]{background:#eef8ef;font-weight:700}
+aside h3{font-size:13px;color:var(--m);margin:0 0 8px;font-weight:600}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:19px;margin:24px 0 10px}
+.sub{color:var(--m);margin:0 0 16px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:end;background:#f5f5f5;padding:14px;border-radius:4px;margin-bottom:14px}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--m);gap:3px}
+input,select{font:inherit;font-size:15px;padding:8px;border:1px solid #bbb;border-radius:3px;background:#fff;min-width:150px}
+.btn{background:var(--g);color:#fff;border:0;border-radius:3px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--gd)}
+.btn.o{background:#fff;color:var(--gd);border:1px solid var(--g)}
+.btn[disabled]{background:#9a9a9a;cursor:default}
+.card{border:1px solid var(--l);border-left:6px solid var(--g);padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.card h4{margin:0;font-size:17px}
+.card p{margin:2px 0;font-size:14px;color:var(--m)}
+.tag{display:inline-block;font-size:12px;background:#eef8ef;color:var(--gd);padding:2px 8px;border-radius:10px;margin:4px 6px 0 0}
+.tag.x{background:#fdecea;color:#b3261e}
+.note{padding:12px 14px;border-radius:4px;font-size:14px;margin-bottom:14px;background:#fff8d6;border:1px solid #e8d96b}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.kpi{border:1px solid var(--l);padding:16px;border-top:5px solid var(--g)}
+.kpi b{font-size:32px;display:block}
+.kpi small{color:var(--m)}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.row .n{width:230px}
+.row .bk{flex:1;background:#eee;height:18px;border-radius:3px;overflow:hidden}
+.row .bk i{display:block;height:100%;background:var(--g)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:800px){.two{grid-template-columns:1fr}}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--k);color:#fff;padding:12px 20px;border-radius:4px;display:none;z-index:9}
+footer{background:var(--k);color:#aaa;font-size:13px;padding:18px 5vw;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="logo"><div><b>ean</b><small>universidad</small></div><span>Prácticas Profesionales</span></div>
+    <div class="roles" role="group" aria-label="Perfil de demostración" id="roles"></div>
+  </div>
+  <nav id="nav" aria-label="Secciones"></nav>
+</header>
+<div class="crumb" id="crumb"></div>
+<div class="wrap" id="app"></div>
+<footer>Prototipo académico – Proyecto Integrador, Gestión de Proyectos, Grupo 3. Todos los datos son sintéticos (Habeas Data, Ley 1581 de 2012).</footer>
+<div id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const ROLES={est:'Estudiantes',emp:'Empresas',adm:'Administración'};
+const TABS={est:['Vacantes','Mis postulaciones'],emp:['Publicar vacante','Mis vacantes'],adm:['Dashboard','Empresas','Facultades','Actividad']};
+const F={'Administración, Economía, Negocios y Finanzas':['Administración de Empresas','Administración en Salud','Contaduría Pública','Economía','Mercadeo y Estrategia Comercial','Negocios Internacionales'],
+'Humanidades y Ciencias Sociales':['Comunicación','Estudios y Gestión Cultural','Lenguas Modernas','Psicología','Turismo Sostenible'],
+'Ingenierías':['Ingeniería Ambiental','Ingeniería de Producción','Ingeniería de Sistemas','Ingeniería en Ciencia de Datos','Ingeniería en Energías','Ingeniería en Inteligencia Artificial','Ingeniería Industrial','Ingeniería Mecatrónica','Ingeniería Química']};
+const FN=Object.keys(F);
+const V=[];
+[['Asistente administrativo','Banco Capital',0,0,'Presencial','Bogotá'],['Coordinación de proyectos junior','Logística Total',0,0,'Híbrido','Medellín'],
+['Auxiliar de gestión hospitalaria','Clínica Andina',0,1,'Presencial','Bogotá'],['Auxiliar contable','Auditores Asociados',0,2,'Presencial','Bogotá'],['Auxiliar de auditoría','Auditores Asociados',0,2,'Híbrido','Cali'],
+['Analista económico junior','Banco Capital',0,3,'Híbrido','Bogotá'],['Asistente de mercadeo digital','Marca Viva',0,4,'Remoto','Bogotá'],['Analista de estrategia comercial','Tienda Online',0,4,'Híbrido','Bogotá'],
+['Practicante de comercio exterior','Importex',0,5,'Presencial','Cartagena'],
+['Community manager','Marca Viva',1,0,'Remoto','Medellín'],['Productor de contenidos','Canal Regional',1,0,'Híbrido','Bogotá'],['Gestor de programación cultural','Centro Cultural Bogotá',1,1,'Presencial','Bogotá'],
+['Asistente de traducción','Idiomas Global',1,2,'Remoto','Bogotá'],['Apoyo en bienestar laboral','Talento Plus',1,3,'Presencial','Bogotá'],['Apoyo en selección de personal','Talento Plus',1,3,'Híbrido','Bogotá'],
+['Asistente de turismo sostenible','Viajes Verdes',1,4,'Presencial','Cartagena'],
+['Gestión ambiental','EcoVerde',2,0,'Presencial','Bogotá'],['Auxiliar de producción','Plásticos SAS',2,1,'Presencial','Bogotá'],['Desarrollador backend','Soft Andina',2,2,'Híbrido','Bogotá'],
+['Soporte TI y redes','Telecom Sur',2,2,'Presencial','Medellín'],['Analista de datos junior','Datos & Co',2,3,'Remoto','Bogotá'],['Practicante en energías renovables','EcoEnergía SA',2,4,'Presencial','Cali'],
+['Asistente de machine learning','Datos & Co',2,5,'Remoto','Bogotá'],['Analista de mejora continua','Logística Total',2,6,'Híbrido','Cali'],['Auxiliar de automatización','Robótica Industrial',2,7,'Presencial','Medellín'],
+['Auxiliar de laboratorio de procesos','Química del Sur',2,8,'Presencial','Bogotá']]
+.forEach((v,i)=>V.push({id:i+1,t:v[0],c:v[1],fac:FN[v[2]],prog:F[FN[v[2]]][v[3]],mod:v[4],city:v[5],apps:i%4+1,ok:true}));
+const PEND=[{n:'Nuevo Horizonte SAS',nit:'900.123.456-1'},{n:'Consultores del Norte',nit:'901.555.222-7'},{n:'GreenTech Colombia',nit:'900.777.888-3'}];
+const S={role:'est',tab:0,fac:FN[2],prog:'Ingeniería de Sistemas',mod:'',city:'',q:'',before:false,applied:new Set(),saved:null,mine:[],t0:Date.now()};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2600)}
+function opts(a,sel,all){return (all!==undefined?`<option value="">${all}</option>`:'')+a.map(x=>`<option ${x===sel?'selected':''}>${esc(x)}</option>`).join('')}
+function frame(){
+  $('#roles').innerHTML=sb?`<span style="font-size:14px">${esc(ME.name)} · ${ROLES[S.role]}</span><button id="out">Salir</button>`:Object.keys(ROLES).map(r=>`<button aria-pressed="${S.role===r}" data-r="${r}">${ROLES[r]}</button>`).join('');
+  $('#nav').innerHTML=TABS[S.role].map((t,i)=>`<button aria-pressed="${S.tab===i}" data-t="${i}">${t}</button>`).join('');
+  $('#crumb').innerHTML=`Inicio / ${ROLES[S.role]} / ${TABS[S.role][S.tab]}`;
+}
+function render(){if(sb&&!ME)return login();frame();const w=$('#app');w.className='wrap'+(S.role==='est'&&S.tab===0?'':' one');
+  const v=S.role+S.tab;({est0:student,est1:myApps,emp0:publish,emp1:myJobs,adm0:dash,adm1:companies,adm2:faculties,adm3:activity})[v](w)}
+function matches(){return V.filter(x=>x.ok&&x.fac===S.fac&&(!S.prog||x.prog===S.prog)&&(!S.mod||x.mod===S.mod)&&(!S.city||x.city===S.city)&&(!S.q||(x.t+x.c+x.prog).toLowerCase().includes(S.q.toLowerCase())))}
+function card(x,showFac){const a=S.applied.has(x.id);
+ return `<div class="card"><div><h4>${esc(x.t)}</h4><p>${esc(x.c)} · ${esc(x.city)}</p><span class="tag">${esc(x.mod)}</span><span class="tag">${esc(x.prog)}</span>${showFac?`<span class="tag x">${esc(x.fac.replace('Facultad de ',''))}</span>`:''}</div>
+ <button class="btn" data-apply="${x.id}" ${a?'disabled':''}>${a?'Postulado ✓':'Postularme'}</button></div>`}
+function student(w){
+ const all=V.filter(x=>x.ok), cities=[...new Set(V.map(x=>x.city))].sort();
+ if(S.before){w.innerHTML=`<main><h1>Plataforma actual: listado único</h1><p class="sub">Así ve hoy el estudiante las vacantes: todas mezcladas, sin clasificar.</p>
+ <div class="note"><b>${all.length} vacantes por revisar</b>, de las cuales solo <b>${V.filter(x=>x.ok&&x.fac===S.fac).length}</b> son de tu facultad. Hay que leer una por una.</div>
+ <button class="btn o" data-before="0">Ver plataforma nueva por facultades</button><h2></h2>${[...all].sort((a,b)=>(a.id*7)%16-(b.id*7)%16).map(x=>card(x,true)).join('')}</main>`;return}
+ const m=matches();
+ w.innerHTML=`<aside><h3>Mi facultad</h3>${FN.map(f=>`<button aria-pressed="${S.fac===f}" data-fac="${esc(f)}">${esc(f.replace('Facultad de ',''))}</button>`).join('')}</aside>
+ <main><h1>Vacantes de práctica para tu carrera</h1><p class="sub">Hola, estudiante de prueba. Estás viendo la oferta de ${esc(S.fac)}.</p>
+ <div class="bar"><label>Programa<select id="fp">${opts(F[S.fac],S.prog,'Todos los programas')}</select></label>
+ <label>Modalidad<select id="fm">${opts(['Presencial','Híbrido','Remoto'],S.mod,'Todas')}</select></label>
+ <label>Ciudad<select id="fc">${opts(cities,S.city,'Todas')}</select></label>
+ <label>Palabra clave<input id="fq" value="${esc(S.q)}" placeholder="Ej: datos, mercadeo"></label>
+ <button class="btn o" id="save">Guardar filtro</button>${S.saved?'<button class="btn o" id="load">Usar mi filtro guardado</button>':''}</div>
+ <div class="note"><b>${m.length} de ${all.length} vacantes</b> son relevantes para ti. <button class="btn o" data-before="1" style="margin-left:8px">Comparar con la plataforma actual</button></div>
+ ${m.length?m.map(x=>card(x)).join(''):'<p>No hay vacantes con estos filtros. Prueba quitando la modalidad o la ciudad.</p>'}</main>`;
+ $('#fp').onchange=e=>{S.prog=e.target.value;render()};$('#fm').onchange=e=>{S.mod=e.target.value;render()};$('#fc').onchange=e=>{S.city=e.target.value;render()};
+ $('#fq').onchange=e=>{S.q=e.target.value;render();$('#fq').focus()};
+ $('#save').onclick=async()=>{const f={fac:S.fac,prog:S.prog,mod:S.mod,city:S.city,q:S.q};if(await act('save',f)==='err')return;S.saved=f;toast('Filtro guardado en tu perfil');render()};
+ if($('#load'))$('#load').onclick=()=>{Object.assign(S,S.saved);render()};
+}
+function myApps(w){const l=V.filter(x=>S.applied.has(x.id));
+ w.innerHTML=`<main><h1>Mis postulaciones</h1><p class="sub">Aquí sigues el estado de cada proceso. Cada cambio llega también a tu correo institucional (simulado).</p>
+ ${l.length?l.map(x=>`<div class="card"><div><h4>${esc(x.t)}</h4><p>${esc(x.c)}</p></div><span class="tag">${esc(statusOf(x))}</span></div>`).join(''):'<p>Aún no te has postulado. Ve a Vacantes y elige una.</p>'}</main>`}
+function publish(w){
+ w.innerHTML=`<main><h1>Publicar una vacante</h1><p class="sub">Indica la carrera requerida para que llegue solo a los estudiantes indicados.</p>
+ <div class="bar"><label>Cargo<input id="pt" placeholder="Ej: Analista de datos"></label>
+ <label>Facultad<select id="pf">${opts(FN,FN[0]).replace(/>Facultad de /g,'>')}</select></label>
+ <label>Programa requerido<select id="pp">${opts(F[FN[0]],'')}</select></label>
+ <label>Modalidad<select id="pm">${opts(['Presencial','Híbrido','Remoto'],'')}</select></label>
+ <label>Ciudad<input id="pc" value="Bogotá"></label><button class="btn" id="go">Publicar vacante</button></div></main>`;
+ $('#pf').onchange=e=>{const f=FN.find(n=>n.replace('Facultad de ','')===e.target.value)||e.target.value;$('#pp').innerHTML=opts(F[f],'')};
+ $('#go').onclick=async()=>{const t=$('#pt').value.trim();if(!t){toast('Escribe el nombre del cargo');return}
+  const fv=$('#pf').value,f=FN.find(n=>n===fv||n.replace('Facultad de ','')===fv);
+  const x={id:V.length+1,t,c:'Mi empresa (demo)',fac:f,prog:$('#pp').value,mod:$('#pm').value,city:$('#pc').value||'Bogotá',apps:0,ok:true};
+  const r=await act('pub',{t,prog:x.prog,mod:x.mod,city:x.city});if(r==='err')return;if(!r){V.push(x);S.mine.push(x)}toast('Vacante publicada y clasificada en '+f);S.tab=1;render()}}
+function myJobsOld(w){const names=['Laura G.','Andrés M.','Camila R.','Julián P.'];
+ w.innerHTML=`<main><h1>Mis vacantes y postulados</h1><p class="sub">Los nombres son ficticios.</p>
+ ${S.mine.length?S.mine.map(x=>`<div class="card"><div><h4>${esc(x.t)}</h4><p>${esc(x.prog)} · ${esc(x.mod)}</p></div><div>${(S.applied.has(x.id)?['Estudiante de prueba']:[]).concat(names.slice(0,x.id%3)).map(n=>`<span class="tag">${n}</span>`).join('')||'<span class="tag">Sin postulados aún</span>'}</div></div>`).join(''):'<p>Todavía no has publicado vacantes.</p>'}</main>`}
+function dash(w){const tot=V.filter(x=>x.ok).length,ap=V.reduce((s,x)=>s+x.apps,0)+S.applied.size;
+ const by=FN.map(f=>[f,V.filter(x=>x.ok&&x.fac===f).length]),mx=Math.max(...by.map(b=>b[1]),1);
+ w.innerHTML=`<main><h1>Dashboard del Área de Prácticas</h1><p class="sub">Indicadores del proyecto (datos de demostración).</p>
+ <div class="kpis"><div class="kpi"><b>100 %</b><small>Vacantes clasificadas por facultad (meta 100 %)</small></div>
+ <div class="kpi"><b>−60 %</b><small>Tiempo de búsqueda: de ${tot} a ~${Math.round(tot/FN.length)} vacantes por revisar</small></div>
+ <div class="kpi"><b>${tot}</b><small>Vacantes activas</small></div><div class="kpi"><b>${ap}</b><small>Postulaciones recibidas</small></div>
+ <div class="kpi"><b>${PEND.length}</b><small>Empresas pendientes de aprobar</small></div><div class="kpi"><b>&gt; 85 %</b><small>Satisfacción objetivo (encuesta UAT)</small></div></div>
+ <h2>Vacantes por facultad</h2>${by.map(b=>`<div class="row"><span class="n">${esc(b[0].replace('Facultad de ',''))}</span><span class="bk"><i style="width:${b[1]/mx*100}%"></i></span><b>${b[1]}</b></div>`).join('')}</main>`}
+function companies(w){
+ w.innerHTML=`<main><h1>Aprobación de empresas aliadas</h1><p class="sub">Valida la idoneidad antes de que publiquen vacantes.</p>
+ ${PEND.length?PEND.map((p,i)=>`<div class="card"><div><h4>${p.n}</h4><p>NIT ${p.nit}</p></div><div><button class="btn" data-ok="${i}">Aprobar</button> <button class="btn o" data-no="${i}">Rechazar</button></div></div>`).join(''):'<p>No hay empresas pendientes.</p>'}</main>`}
+function faculties(w){
+ w.innerHTML=`<main><h1>Parametrización de facultades</h1><p class="sub">Agrega facultades o programas y aparecen al instante en la vista del estudiante.</p>
+ <div class="bar"><label>Nueva facultad<input id="nf" placeholder="Nombre"></label><button class="btn" id="af">Agregar facultad</button>
+ <label>Facultad<select id="sf">${opts(FN,'')}</select></label><label>Nuevo programa<input id="np" placeholder="Nombre"></label><button class="btn" id="ap">Agregar programa</button></div>
+ ${FN.map(f=>`<div class="card"><div><h4>${esc(f)}</h4>${F[f].map(p=>`<span class="tag">${esc(p)}</span>`).join('')}</div></div>`).join('')}</main>`;
+ $('#af').onclick=async()=>{const n=$('#nf').value.trim();if(!n||F[n])return toast('Escribe un nombre nuevo');const r=await act('fac',n);if(r==='err')return;if(!r){F[n]=[];FN.push(n)}toast('Facultad agregada');render()};
+ $('#ap').onclick=async()=>{const n=$('#np').value.trim();if(!n)return toast('Escribe el programa');const r=await act('prog',{f:$('#sf').value,n});if(r==='err')return;if(!r)F[$('#sf').value].push(n);toast('Programa agregado');render()}}
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='out'){await sb.auth.signOut();ME=null;S.portal=null;return render()}const d=b.dataset;
+ if(d.p){S.portal=d.p;S.mode='in';render()}
+ else if(d.r){S.role=d.r;S.tab=0;render()}
+ else if(d.t!==undefined){S.tab=+d.t;render()}
+ else if(d.fac){S.fac=d.fac;S.prog='';render()}
+ else if(d.before!==undefined){S.before=d.before==='1';render()}
+ else if(d.apply){const r=await act('apply',+d.apply);if(r==='err')return;if(!r)S.applied.add(+d.apply);toast('Postulación enviada. Recibirás un correo con el estado (simulado)');render()}
+ else if(d.ok!==undefined){const p=PEND[+d.ok],r=await act('co',{id:p.id,s:'approved'});if(r==='err')return;toast(p.n+' aprobada');if(!r)PEND.splice(+d.ok,1);render()}
+ else if(d.no!==undefined){const p=PEND[+d.no],r=await act('co',{id:p.id,s:'rejected'});if(r==='err')return;toast(p.n+' rechazada');if(!r)PEND.splice(+d.no,1);render()}});
+const SB_URL='https://cfrnbgigrikefzskanng.supabase.co',SB_KEY='sb_publishable_HY3uzBCsdMCteqm8e2p0gw_JLd1-TQ2';
+const sb=SB_URL&&window.supabase?supabase.createClient(SB_URL,SB_KEY):null;
+let ME=null;const ST=['En revisión','Preseleccionado','Rechazado','Contratado'];
+const statusOf=x=>((x.al||[]).find(a=>a.student_id===(ME&&ME.id))||{}).status||'En revisión';
+async function load(){
+ const [f,v]=await Promise.all([sb.from('faculties').select('name,programs(name)').order('id'),
+  sb.from('vacancies').select('id,title,modality,city,companies(name,owner_id,status),programs(name,faculties(name)),applications(id,student_id,status,profiles(full_name))').eq('active',true).order('id')]);
+ Object.keys(F).forEach(k=>delete F[k]);FN.length=0;
+ f.data.forEach(r=>{F[r.name]=r.programs.map(p=>p.name);FN.push(r.name)});
+ V.length=0;v.data.forEach(r=>V.push({id:r.id,t:r.title,c:r.companies.name,fac:r.programs.faculties.name,prog:r.programs.name,mod:r.modality,city:r.city,ok:r.companies.status==='approved',own:r.companies.owner_id===ME.id,apps:r.applications.length,al:r.applications}));
+ S.applied=new Set(V.filter(x=>x.al.some(a=>a.student_id===ME.id)).map(x=>x.id));S.mine=V.filter(x=>x.own);
+ if(!F[S.fac])S.fac=FN[0];if(!F[S.fac].includes(S.prog))S.prog='';
+ PEND.length=0;
+ if(S.role==='adm')(await sb.from('companies').select('id,name,nit').eq('status','pending')).data.forEach(c=>PEND.push({id:c.id,n:c.name,nit:c.nit||''}));
+ if(S.role==='est'){const q=(await sb.from('saved_filters').select('filter').eq('student_id',ME.id).maybeSingle()).data;S.saved=q?q.filter:null}
+ if(S.role==='emp'){const c=(await sb.from('companies').select('id,status').eq('owner_id',ME.id).maybeSingle()).data;ME.cid=c&&c.id;ME.cs=c&&c.status}
+}
+async function act(k,a){
+ if(!sb)return false;let r;
+ if(k==='pub'&&ME.cs!=='approved'){toast('Tu empresa está pendiente de aprobación del Área de Prácticas');return 'err'}
+ if(k==='apply')r=await sb.from('applications').insert({vacancy_id:a,student_id:ME.id});
+ if(k==='save')r=await sb.from('saved_filters').upsert({student_id:ME.id,filter:a});
+ if(k==='pub'){const p=await sb.from('programs').select('id').eq('name',a.prog).limit(1);r=await sb.from('vacancies').insert({company_id:ME.cid,program_id:p.data[0].id,title:a.t,modality:a.mod,city:a.city})}
+ if(k==='co')r=await sb.from('companies').update({status:a.s}).eq('id',a.id);
+ if(k==='fac')r=await sb.from('faculties').insert({name:a});
+ if(k==='prog'){const f=await sb.from('faculties').select('id').eq('name',a.f).limit(1);r=await sb.from('programs').insert({faculty_id:f.data[0].id,name:a.n})}
+ if(k==='st')r=await sb.from('applications').update({status:a.s}).eq('id',a.id);
+ if(r.error){toast(r.error.message);return 'err'}
+ await load();return true;
+}
+async function boot(exp){
+ try{const {data:{session}}=await sb.auth.getSession();if(!session){ME=null;return render()}
+ const p=(await sb.from('profiles').select('role,full_name').eq('id',session.user.id).single()).data;
+ if(exp&&p.role!==exp){await sb.auth.signOut();ME=null;toast('Esta cuenta pertenece al portal de '+PN[p.role]+'. Ingresa por ese portal.');return render()}
+ ME={id:session.user.id,name:p.full_name||session.user.email};S.role={student:'est',company:'emp',admin:'adm'}[p.role];S.tab=0;
+ await load();render()}catch(e){toast('No se pudo conectar con la base de datos. Revisa la configuración.')}
+}
+const PN={student:'Estudiantes',company:'Empresas aliadas',admin:'Área de Prácticas'};
+const PD={student:'Busca vacantes de tu facultad y postúlate en pocos clics.',company:'Publica vacantes y gestiona a tus postulados.',admin:'Aprueba empresas, parametriza facultades y revisa indicadores y actividad.'};
+function login(){
+ $('#nav').innerHTML=$('#roles').innerHTML='';const w=$('#app');w.className='wrap one';const p=S.portal;
+ $('#crumb').textContent='Inicio / Ingreso'+(p?' / '+PN[p]:'');
+ if(!p){w.innerHTML=`<main><h1>¿Cómo quieres ingresar?</h1><p class="sub">Cada perfil tiene su propio acceso y solo puede hacer sus propias acciones.</p>${Object.keys(PN).map(k=>`<div class="card"><div><h4>Portal de ${PN[k]}</h4><p>${PD[k]}</p></div><button class="btn" data-p="${k}">Entrar</button></div>`).join('')}</main>`;return}
+ const up=S.mode==='up'&&p!=='admin';
+ w.innerHTML=`<main style="max-width:460px"><h1>Portal de ${PN[p]}</h1><p class="sub">${up?'Crea tu cuenta.':'Ingresa con tu cuenta.'}</p><div class="bar" style="flex-direction:column;align-items:stretch">
+ ${up?`<label>${p==='company'?'Razón social':'Nombre completo'}<input id="ln"></label>${p==='company'?'<label>NIT<input id="lnit" placeholder="900.000.000-0"></label>':''}`:''}
+ <label>${p==='student'?'Correo institucional':p==='company'?'Correo corporativo':'Correo del Área de Prácticas'}<input id="le" type="email"></label>
+ <label>Contraseña (mínimo 6 caracteres)<input id="lp" type="password"></label>
+ ${up?'<label style="flex-direction:row;gap:8px"><input id="lc" type="checkbox" style="min-width:0"> Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012).</label>':''}
+ <button class="btn" id="go1">${up?'Crear cuenta':'Ingresar'}</button>
+ ${p==='admin'?'<p class="sub">Las cuentas del Área las crea la Dirección; no hay registro público.</p>':`<button class="btn o" id="sw">${up?'Ya tengo cuenta':'Crear cuenta nueva'}</button>`}
+ <button class="btn o" id="bk">Cambiar de portal</button></div></main>`;
+ $('#bk').onclick=()=>{S.portal=null;S.mode='in';render()};
+ if($('#sw'))$('#sw').onclick=()=>{S.mode=up?'in':'up';render()};
+ $('#go1').onclick=async()=>{const em=$('#le').value,pw=$('#lp').value;
+  if(up){if(!$('#lc').checked)return toast('Debes autorizar el tratamiento de datos para registrarte');
+   const r=await sb.auth.signUp({email:em,password:pw,options:{data:{full_name:$('#ln').value,company:$('#ln').value,nit:$('#lnit')?$('#lnit').value:'',role:p,consent:true}}});
+   if(r.error)return toast(r.error.message);if(!r.data.session)return toast('Cuenta creada. Confirma tu correo e ingresa.')}
+  else{const r=await sb.auth.signInWithPassword({email:em,password:pw});if(r.error)return toast('Correo o contraseña incorrectos')}
+  boot(p)};
+}
+async function activity(w){
+ w.innerHTML='<main><h1>Actividad por rol</h1><p class="sub">Quién hizo qué en la plataforma.</p><div id="lg">Cargando…</div></main>';
+ if(!sb){$('#lg').innerHTML='<p>El registro de actividad se guarda en la base de datos. Conecta Supabase para verlo.</p>';return}
+ const r=await sb.from('audit_log').select('at,actor_name,actor_role,action,detail').order('id',{ascending:false}).limit(25);
+ const AN={'applications INSERT':'Se postuló a una vacante','applications UPDATE':'Cambió el estado de una postulación','companies UPDATE':'Resolvió el registro de una empresa','vacancies INSERT':'Publicó una vacante','faculties INSERT':'Creó una facultad','programs INSERT':'Creó un programa'};
+ if(!$('#lg'))return;
+ $('#lg').innerHTML=r.data&&r.data.length?r.data.map(x=>`<div class="card"><div><h4>${AN[x.action]||esc(x.action)}</h4><p>${esc(x.actor_name||'Sistema')} · ${esc(PN[x.actor_role]||'')} · ${new Date(x.at).toLocaleString('es-CO')}</p></div><span class="tag">${esc(x.detail||'')}</span></div>`).join(''):'<p>Aún no hay actividad.</p>';
+}
+function myJobs(w){
+ w.innerHTML=`<main><h1>Mis vacantes y postulados</h1><p class="sub">Cambia el estado de cada postulado: el estudiante lo verá en su cuenta.</p>
+ ${S.mine.length?S.mine.map(x=>`<div class="card"><div><h4>${esc(x.t)}</h4><p>${esc(x.prog)} · ${esc(x.mod)}</p></div><div>${(x.al||[]).map(a=>`<label>${esc((a.profiles&&a.profiles.full_name)||'Estudiante')}<select data-st="${a.id}">${opts(ST,a.status)}</select></label>`).join('')||'<span class="tag">Sin postulados aún</span>'}</div></div>`).join(''):'<p>Todavía no has publicado vacantes.</p>'}</main>`}
+document.addEventListener('change',async e=>{const id=e.target.dataset&&e.target.dataset.st;if(id&&await act('st',{id:+id,s:e.target.value})!=='err')toast('Estado actualizado (aviso al estudiante simulado)')});
+sb?boot():render();
+</script>
+</body>
+</html>
